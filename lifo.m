@@ -1,46 +1,47 @@
-function [totdistance, path, solution]= dijkstra(startnode, endnode, IncidenceMatrix, LengthsMatrix)
-% Initialize problem
-currentnode=startnode;
+function [totdistance, path, solution]= lifo(startnode, endnode, IncidenceMatrix, LengthsMatrix)
 
 % Distance Matrix (d in class notes)
 dist=ones(size(IncidenceMatrix,1),1)*inf;
 dist(startnode)=0;
 
-% Label if node has been visited
-T=zeros(size(IncidenceMatrix,1),1);
+% Open nodes
+O=startnode;
 
 % Previous node matrix (v in class notes)
-previousnode=zeros(size(IncidenceMatrix,1),1);flag=0;
+previousnode=zeros(size(IncidenceMatrix,1),1);
 
-% Main loop - exists if currentnode is the target node or if algo can't
-% find any new nodes to visit (no solution to problem)
-while currentnode~=endnode && flag==0;
+% Upper bound on the length of shortest path
+U=inf;
+
+% Main loop
+while isempty(O)~=1
+    % Picks first open node from list and removes it from the list
+    i=O(length(O));
+    O(length(O))=[];
     % for + if loop that looks for nodes to test
-    for i=1:size(IncidenceMatrix,1)
-        if IncidenceMatrix(currentnode,i)==1 && T(i)==0
+    for j=1:size(IncidenceMatrix,1)
+        if IncidenceMatrix(i,j)==1
             % Assigns new D_i value to node (update etiquette)
-            if (LengthsMatrix(currentnode,i)+dist(currentnode))<dist(i)
-                dist(i)=LengthsMatrix(currentnode,i)+dist(currentnode);
+            if (LengthsMatrix(i,j)+dist(i))<min(dist(j),U)
+                dist(j)=LengthsMatrix(i,j)+dist(i);
                 % Assigns node's optimal previous node (v_i in class notes)
-                previousnode(i)=currentnode;
+                previousnode(j)=i;
+                % Updates U if tested node is end node, otherwise adds
+                % nodes to visit to O list
+                if j==endnode
+                    U=min(U,dist(j));
+                else
+                    O=[O,j];
+                end
             end
         end
     end
-    % Removes node from unvisited list
-    T(currentnode)=1;
-    % Picks new node to visit
-    [totdistance,nextnode]=min(dist+T*realmax);
-    % Exit condition (if there is no new node to vist and the endnote hasn't
-    % been visited - no solution)
-    if min(dist+T*realmax)>=realmax
-        flag=1;
-    end
-    currentnode=nextnode;
 end
 
-% There is a solution
-if flag==0;
+% If there is a solution
+if U<realmax;
     % Establishing path
+    currentnode=endnode;
     path=currentnode;
     while previousnode(currentnode)~=0
         path=[previousnode(currentnode), path];
@@ -58,16 +59,15 @@ if flag==0;
     end
     
     % Validating that the total distance calculated matches d_t
-    if validationdist~=totdistance
+    if validationdist~=U
         error('Mismatch between validation distance and total distance')
     end
-    
-    % Validates that the path starts and ends at the right spot
     if path(1)~=startnode || path(length(path))~=endnode
         error('Path doesn''t go from start node to end node')
     end
     
     solution=true;
+    totdistance=U;
     
 else
     % No solution

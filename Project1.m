@@ -8,18 +8,35 @@ clc;clear;close all
 IncidenceMatrix = spconvert(load('Incidence.txt'));
 LengthsMatrix = spconvert(load('Lengths.txt'));
 
-for i=1:5
+parfor i=1:5
     % Selection of random start and end nodes
     startnode=ceil(size(IncidenceMatrix,1)*rand());
     endnode=ceil(size(IncidenceMatrix,1)*rand());
     
-    %Dijkstra Method
+    % Dijkstra Method
+    tic
     [distance, path, solution]=dijkstra(startnode, endnode, IncidenceMatrix, LengthsMatrix);
     if solution ==true
-        fprintf('With Dijkstra, we get from %d to %d, in %d steps for a total distance %f\n',startnode,endnode,length(path),distance)
+        fprintf('Dijkstra : from %d to %d, %d steps, total distance %f, %f seconds\n',startnode,endnode,length(path),distance,toc)
     else
-        fprintf('With Dijkstra, from %d to %d, there is no solution\n',startnode,endnode)
+        fprintf('Dijkstra : from %d to %d, there is no solution\n',startnode,endnode)
+    end
+    
+    % FIFO Method
+    tic
+    [distance, path, solution]=fifo(startnode, endnode, IncidenceMatrix, LengthsMatrix);
+    if solution ==true
+        fprintf('FIFO : from %d to %d, %d steps, total distance %f, %f seconds\n',startnode,endnode,length(path),distance,toc)
+    else
+        fprintf('FIFO : from %d to %d, there is no solution\n',startnode,endnode)
+    end
+    
+    % LIFO Method
+    tic
+    [distance, path, solution]=lifo(startnode, endnode, IncidenceMatrix, LengthsMatrix);
+    if solution ==true
+        fprintf('LIFO : from %d to %d, %d steps, total distance %f, %f seconds\n',startnode,endnode,length(path),distance,toc)
+    else
+        fprintf('LIFO : from %d to %d, there is no solution\n',startnode,endnode)
     end
 end
-
-
