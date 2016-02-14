@@ -15,7 +15,7 @@ parfor i=1:5
     
     % Dijkstra Method
     tic
-    [distance, path, solution]=dijkstra(startnode, endnode, IncidenceMatrix, LengthsMatrix);
+    [distance, pathdij, solution]=dijkstra(startnode, endnode, IncidenceMatrix, LengthsMatrix);
     if solution ==true
         fprintf('Dijkstra : from %d to %d, %d steps, total distance %f, %f seconds\n',startnode,endnode,length(path),distance,toc)
     else
@@ -24,7 +24,7 @@ parfor i=1:5
     
     % FIFO Method
     tic
-    [distance, path, solution]=fifo(startnode, endnode, IncidenceMatrix, LengthsMatrix);
+    [distance, pathfifo, solution]=fifo(startnode, endnode, IncidenceMatrix, LengthsMatrix);
     if solution ==true
         fprintf('FIFO : from %d to %d, %d steps, total distance %f, %f seconds\n',startnode,endnode,length(path),distance,toc)
     else
@@ -33,10 +33,17 @@ parfor i=1:5
     
     % LIFO Method
     tic
-    [distance, path, solution]=lifo(startnode, endnode, IncidenceMatrix, LengthsMatrix);
+    [distance, pathlifo, solution]=lifo(startnode, endnode, IncidenceMatrix, LengthsMatrix);
     if solution ==true
         fprintf('LIFO : from %d to %d, %d steps, total distance %f, %f seconds\n',startnode,endnode,length(path),distance,toc)
     else
         fprintf('LIFO : from %d to %d, there is no solution\n',startnode,endnode)
+    end
+    
+    if pathdij==pathfifo && pathdij==pathlifo
+        fprintf('Dijkstra, FIFO and LIFO have matching paths\n\n')
+
+    else
+        fprintf('Dijkstra, FIFO and LIFO have DIFFERENT paths\n\n')
     end
 end
