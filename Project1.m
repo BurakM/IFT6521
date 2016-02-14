@@ -41,8 +41,8 @@ parfor i=1:5
     end
     
     if pathdij==pathfifo && pathdij==pathlifo
-        fprintf('Dijkstra, FIFO and LIFO have matching paths\n\n')
+        fprintf('Dijkstra, FIFO and LIFO have matching paths from %d to %d,\n',startnode,endnode)
     else
-        fprintf('Dijkstra, FIFO and LIFO have DIFFERENT paths\n\n')
+        fprintf('Dijkstra, FIFO and LIFO have DIFFERENT paths from %d to %d,\n',startnode,endnode)
     end
 end
