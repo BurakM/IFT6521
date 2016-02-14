@@ -40,7 +40,7 @@ parfor i=1:5
         fprintf('LIFO : from %d to %d, there is no solution\n',startnode,endnode)
     end
     
-    if pathdij==pathfifo && pathdij==pathlifo
+    if isequal(pathdij,pathfifo)==1 && isequal(pathdij,pathlifo)==1
         fprintf('Dijkstra, FIFO and LIFO have matching paths from %d to %d,\n',startnode,endnode)
     else
         fprintf('Dijkstra, FIFO and LIFO have DIFFERENT paths from %d to %d,\n',startnode,endnode)
