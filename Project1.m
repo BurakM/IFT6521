@@ -8,7 +8,10 @@ clc;clear;close all
 IncidenceMatrix = spconvert(load('Incidence.txt'));
 LengthsMatrix = spconvert(load('Lengths.txt'));
 
-parfor i=1:5
+numberofiterations=16;
+results=zeros(4,numberofiterations);
+
+for i=1:numberofiterations
     % Selection of random start and end nodes
     startnode=ceil(size(IncidenceMatrix,1)*rand());
     endnode=ceil(size(IncidenceMatrix,1)*rand());
@@ -16,6 +19,8 @@ parfor i=1:5
     % Dijkstra Method
     tic
     [distance, pathdij, solution]=dijkstra(startnode, endnode, IncidenceMatrix, LengthsMatrix);
+    results(1,i)=toc;
+    
     if solution ==true
         fprintf('Dijkstra : from %d to %d, %d steps, total distance %f, %f seconds\n',startnode,endnode,length(pathdij),distance,toc)
     else
@@ -25,6 +30,8 @@ parfor i=1:5
     % FIFO Method
     tic
     [distance, pathfifo, solution]=fifo(startnode, endnode, IncidenceMatrix, LengthsMatrix);
+    results(2,i)=toc;
+    
     if solution ==true
         fprintf('FIFO : from %d to %d, %d steps, total distance %f, %f seconds\n',startnode,endnode,length(pathfifo),distance,toc)
     else
@@ -34,6 +41,8 @@ parfor i=1:5
     % LIFO Method
     tic
     [distance, pathlifo, solution]=lifo(startnode, endnode, IncidenceMatrix, LengthsMatrix);
+    results(3,i)=toc;
+    
     if solution ==true
         fprintf('LIFO : from %d to %d, %d steps, total distance %f, %f seconds\n',startnode,endnode,length(pathlifo),distance,toc)
     else
@@ -42,7 +51,9 @@ parfor i=1:5
     
     if isequal(pathdij,pathfifo)==1 && isequal(pathdij,pathlifo)==1
         fprintf('Dijkstra, FIFO and LIFO have matching paths from %d to %d,\n',startnode,endnode)
+        results(4,i)=1;
     else
         fprintf('Dijkstra, FIFO and LIFO have DIFFERENT paths from %d to %d,\n',startnode,endnode)
+        results(4,i)=0;
     end
 end

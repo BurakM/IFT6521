@@ -1,4 +1,7 @@
 function [totdistance, path, solution]= dijkstra(startnode, endnode, IncidenceMatrix, LengthsMatrix)
+% Indexing problem
+[indexi,indexj,value] = find(IncidenceMatrix);
+
 % Initialize problem
 currentnode=startnode;
 
@@ -15,19 +18,23 @@ previousnode=zeros(size(IncidenceMatrix,1),1);flag=0;
 % Main loop - exists if currentnode is the target node or if algo can't
 % find any new nodes to visit (no solution to problem)
 while currentnode~=endnode && flag==0;
-    % for + if loop that looks for nodes to test
-    for i=1:size(IncidenceMatrix,1)
-        if IncidenceMatrix(currentnode,i)==1 && T(i)==0
+    % Search for edges that we can test (avoids looping through junk)
+    listtotest=find(indexi==currentnode);
+    % Loops through the edges that are testable
+    for i=1:length(listtotest)
+        % Verifies if node has been visited before
+        if  T(indexj(listtotest(i)))==0
             % Assigns new D_i value to node (update etiquette)
-            if (LengthsMatrix(currentnode,i)+dist(currentnode))<dist(i)
-                dist(i)=LengthsMatrix(currentnode,i)+dist(currentnode);
+            if (LengthsMatrix(currentnode,indexj(listtotest(i)))+dist(currentnode))<dist(indexj(listtotest(i)))
+                dist(indexj(listtotest(i)))=LengthsMatrix(currentnode,indexj(listtotest(i)))+dist(currentnode);
                 % Assigns node's optimal previous node (v_i in class notes)
-                previousnode(i)=currentnode;
+                previousnode(indexj(listtotest(i)))=currentnode;
             end
         end
     end
     % Removes node from unvisited list
     T(currentnode)=1;
+    
     % Picks new node to visit
     [totdistance,nextnode]=min(dist+T*realmax);
     % Exit condition (if there is no new node to vist and the endnote hasn't
@@ -75,6 +82,4 @@ else
     totdistance=0;
     path=[];
     solution=false;
-end
-
 end

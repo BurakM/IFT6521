@@ -1,4 +1,6 @@
 function [totdistance, path, solution]= fifo(startnode, endnode, IncidenceMatrix, LengthsMatrix)
+% Indexing problem
+[indexi,indexj,value] = find(IncidenceMatrix);
 
 % Distance Matrix (d in class notes)
 dist=ones(size(IncidenceMatrix,1),1)*inf;
@@ -16,25 +18,27 @@ U=inf;
 % Main loop
 while isempty(O)~=1
     % Picks first open node from list and removes it from the list
-    i=O(1);
+    currentnode=O(1);
     O(1)=[];
-    % for + if loop that looks for nodes to test
-    for j=1:size(IncidenceMatrix,1)
-        if IncidenceMatrix(i,j)==1
-            % Assigns new D_i value to node (update etiquette)
-            if (LengthsMatrix(i,j)+dist(i))<min(dist(j),U)
-                dist(j)=LengthsMatrix(i,j)+dist(i);
-                % Assigns node's optimal previous node (v_i in class notes)
-                previousnode(j)=i;
-                % Updates U if tested node is end node, otherwise adds
-                % nodes to visit to O list
-                if j==endnode
-                    U=min(U,dist(j));
-                else
-                    O=[O,j];
-                end
+    
+    % Search for edges that we can test (avoids looping through junk)
+    listtotest=find(indexi==currentnode);
+    % Loops through the edges that are testable
+    for i=1:length(listtotest);
+        % Assigns new D_i value to node (update etiquette)
+        if (LengthsMatrix(currentnode,indexj(listtotest(i)))+dist(currentnode))<min(dist(indexj(listtotest(i))),U)
+            dist(indexj(listtotest(i)))=LengthsMatrix(currentnode,indexj(listtotest(i)))+dist(currentnode);
+            % Assigns node's optimal previous node (v_i in class notes)
+            previousnode(indexj(listtotest(i)))=currentnode;
+            % Updates U if tested node is end node, otherwise adds
+            % nodes to visit to O list
+            if indexj(listtotest(i))==endnode
+                U=min(U,dist(indexj(listtotest(i))));
+            else
+                O=[O,indexj(listtotest(i))];
             end
         end
+        
     end
 end
 
@@ -50,9 +54,9 @@ if U<realmax;
     
     % Validation of the path (goes from initial to final node
     validationdist=0;
-    for i=1:(length(path)-1)
-        validationdist=validationdist+LengthsMatrix(path(i),path(i+1));
-        if IncidenceMatrix(path(i),path(i+1))==0
+    for currentnode=1:(length(path)-1)
+        validationdist=validationdist+LengthsMatrix(path(currentnode),path(currentnode+1));
+        if IncidenceMatrix(path(currentnode),path(currentnode+1))==0
             error('The path vector doesn''t work')
         end
         
@@ -78,3 +82,4 @@ else
 end
 
 end
+
