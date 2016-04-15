@@ -2,10 +2,7 @@ function [alpha,Z]=AlphaCalculation(d,L,phi,sigma,P,r)
 
 % Discretization of Z space
 Z=(d-3*L*sigma):0.1:(d+3*L*sigma);
-% For some odd reason, fucking Matlab was being a bitch about vector Z.
-% There were weird rounding errors that would introduce 10^-16 bullshit
-% that made me spend about a day fucking around with the code to find.
-% Sorry for the language.
+% For some odd reason, there were significant rounding errors
 Z=round(Z,1);
 
 % Calculation of distribution mean
